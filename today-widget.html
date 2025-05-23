@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Date Widget</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: transparent;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .code-window {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 400px;
+            max-width: 90vw;
+        }
+        
+        .window-header {
+            background-color: #2d2d2d;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .window-dots {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot.red {
+            background-color: #ff5f57;
+        }
+        
+        .dot.yellow {
+            background-color: #ffbd2e;
+        }
+        
+        .dot.green {
+            background-color: #28ca42;
+        }
+        
+        .filename {
+            color: #cccccc;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .code-content {
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .line-number {
+            color: #858585;
+            margin-right: 16px;
+            user-select: none;
+        }
+        
+        .keyword {
+            color: #569cd6;
+        }
+        
+        .string {
+            color: #ce9178;
+        }
+        
+        .function {
+            color: #dcdcaa;
+        }
+        
+        .parentheses {
+            color: #d4d4d4;
+        }
+        
+        .code-line {
+            display: flex;
+            align-items: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="code-window">
+        <div class="window-header">
+            <div class="window-dots">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="filename">today.py</div>
+        </div>
+        <div class="code-content">
+            <div class="code-line">
+                <span class="line-number">1</span>
+                <span class="function">print</span><span class="parentheses">(</span><span class="string" id="date-string">"Today is Friday, May 23, 2025"</span><span class="parentheses">)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateDate() {
+            const now = new Date();
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const dayName = days[now.getDay()];
+            const monthName = months[now.getMonth()];
+            const day = now.getDate();
+            const year = now.getFullYear();
+            
+            const dateString = `"Today is ${dayName}, ${monthName} ${day}, ${year}"`;
+            const dateElement = document.getElementById('date-string');
+            
+            // Add fade effect when updating
+            dateElement.classList.remove('fade-in');
+            void dateElement.offsetWidth; // Trigger reflow
+            dateElement.classList.add('fade-in');
+            
+            dateElement.textContent = dateString;
+        }
+        
+        // Update immediately when page loads
+        updateDate();
+        
+        // Update at midnight every day
+        function scheduleNextUpdate() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const timeUntilMidnight = tomorrow - now;
+            
+            setTimeout(() => {
+                updateDate();
+                // Schedule the next update for 24 hours later
+                setInterval(updateDate, 24 * 60 * 60 * 1000);
+            }, timeUntilMidnight);
+        }
+        
+        scheduleNextUpdate();
+        
+        // Also update every minute to handle timezone changes or browser sleep
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                updateDate();
+            }
+        }, 60000);
+    </script>
+</body>
+</html>
