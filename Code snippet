@@ -1,0 +1,7 @@
+from datetime import date
+
+today = date(2025, 5, 23).strftime('%B %d, %Y')
+print(f"Today is {today}")
+
+reminder = "Keep learning and stay consistent!"
+print(reminder)
